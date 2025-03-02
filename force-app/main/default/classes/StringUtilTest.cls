@@ -37,5 +37,5 @@
         System.assertEquals('olleh', StringUtil.reverse('hello'), 'Expected string to be reversed');
         System.assertEquals('', StringUtil.reverse(''), 'Expected empty string to remain empty');
         System.assertEquals(null, StringUtil.reverse(null), 'Expected null input to remain null');
-    }
+    } 
 }
