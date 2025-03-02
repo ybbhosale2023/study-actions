@@ -38,3 +38,4 @@
         System.assertEquals('', StringUtil.reverse(''), 'Expected empty string to remain empty');
         System.assertEquals(null, StringUtil.reverse(null), 'Expected null input to remain null');
     }
+}
