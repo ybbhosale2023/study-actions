@@ -1,0 +1,62 @@
+/**
+ * Authenticator : Property Finder
+ * 
+ * 
+ */
+public class PropertyFinderAuthenticator {
+    
+    public static final String API_KEY =  ApplicationSettings.getPropertyFinderAPIKey();
+    
+    public static final String API_SECRET = ApplicationSettings.getPropertyFinderAPISecret();
+    
+    public static final String TOKEN_ENDPOINT = 'https://auth.propertyfinder.com/auth/oauth/v1/token';
+    
+    /**
+     * Authenticate PF
+     * 
+     * 
+     */
+    public static String authenticate() {
+		// Combine API Key and API Secret
+        String credentials = API_KEY + ':' + API_SECRET;
+        String base64Credentials = EncodingUtil.base64Encode(Blob.valueOf(credentials));
+
+        // Create the HTTP request
+        Http http = new Http();
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint(TOKEN_ENDPOINT);
+        request.setMethod('POST');
+        request.setHeader('Authorization', 'Basic ' + base64Credentials);
+        request.setHeader('Content-Type', 'application/json');
+
+        // Set the body of the request
+        String body = '{"scope": "openid", "grant_type": "client_credentials"}';
+        request.setBody(body);
+
+        // Send the request and get the response
+        HttpResponse response = http.send(request);
+
+        // Check the response status
+        if (response.getStatusCode() == 200) {
+            // Parse the JSON response
+            TokenResponse tokenResponse = (TokenResponse) JSON.deserialize(response.getBody(), TokenResponse.class);
+            
+            return tokenResponse.access_token;
+        } else {
+            // Handle error
+            System.debug('Error: ' + response.getStatus() + ' - ' + response.getBody());
+            return null;
+        }
+    }
+    
+    /**
+     * TokenResponse
+     * 
+     */
+    public class TokenResponse {
+        public String access_token;
+        public String token_type;
+        public Integer expires_in;
+        public String scope;
+    }
+}
