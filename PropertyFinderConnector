@@ -1,0 +1,79 @@
+/**
+ * PropertyFinderConnector Property finder API Connector 
+ * 
+ * 
+ */
+public class PropertyFinderConnector {
+    
+    private Static Final Integer PF_TIMEOUT = 120000;
+    
+    /**
+     * Count Total Leads 
+     * 
+     * 
+     */
+    public static Integer getTotalLeads(String endpoint , String securityToken ){
+        Integer leadCounts = 0;
+        String accessToken = PropertyFinderAuthenticator.authenticate();
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint(endpoint);
+        request.setMethod('GET');
+        
+        request.setHeader('Authorization', 'Bearer ' + accessToken);
+        
+        
+        // Send the request and get the response
+        Http http = new Http();
+        request.setTimeout( PF_TIMEOUT );
+        HttpResponse response = http.send(request);
+        Map<String, Object>  reurnResult = null ;
+        
+        // Check the response status code
+        if (response.getStatusCode() == 200) {
+            // The request was successful, get the response body as JSON
+            String responseBody = response.getBody();
+            reurnResult = (Map<String, Object> )JSON.deserializeUntyped(responseBody);
+            if( reurnResult != null ){
+               leadCounts =  (Integer)reurnResult.get('count');
+            }
+        }
+        
+        return leadCounts;
+    }
+    /**
+     * Connect to end Point with the the parameter values 
+     * 
+     */
+    public Static Map<String, Object>   getLeads(String endpoint , String securityToken) {
+         
+        String accessToken = PropertyFinderAuthenticator.authenticate();
+        
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint(endpoint);
+        request.setMethod('GET');
+        
+        request.setHeader('X-MyCRM-Expand-Data','true');
+        request.setHeader('Authorization', 'Bearer ' + accessToken);
+        
+        
+        // Send the request and get the response
+        Http http = new Http();
+        request.setTimeout( PF_TIMEOUT );
+        HttpResponse response = http.send(request);
+        Map<String, Object>  reurnResult = null ;
+        
+        // Check the response status code
+        if (response.getStatusCode() == 200) {
+            // The request was successful, get the response body as JSON
+            String responseBody = response.getBody();
+            reurnResult = (Map<String, Object> )JSON.deserializeUntyped(responseBody);
+             
+            
+        } else {
+            // The request failed, handle the error
+            ApexLogger.error('PropertyFinderConnector', 'Error: ' + response.getStatus() + ' - ' + response.getStatusCode());
+        }
+        return reurnResult;
+    }
+
+}
